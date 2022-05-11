@@ -2,7 +2,7 @@
 
 This is a gem that runs Bundler checksum integrity checks against RubyGems API.
 
-It allows to detect packages that were tampered with or replaced via cache poison.
+It allows to detect packages that were tampered with or replaced via cache poison or replaced.
 
 It uses correct SHA checksums from the RubyGems API, so if anything happened "in between" it should be detected.
 
