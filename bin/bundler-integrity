@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+# This script checks the integrity of gems in your projects against RubyGems API
+# It will detect any invalid packages potentially affected by the cache poison CVE.
+
+# Built by Maciej Mensfeld@WhiteSource
+
+require 'bundler'
+require 'json'
+require 'open-uri'
+require 'digest/sha2'
+
+# Packages cache paths candidates (we will check all)
+CACHE_DIRS = [
+  Bundler::RubygemsIntegration.new.gem_cache,
+  ::Bundler.app_cache
+].tap(&:flatten!).freeze
+
+::Bundler.configure
+::Bundler::Fetcher.disable_endpoint = nil
+
+deps = ::Bundler::Definition
+       .build(Bundler.default_gemfile, Bundler.default_lockfile, nil)
+       .tap(&:validate_runtime!)
+
+
+deps.specs.each do |spec|
+  intel_path = "api/v1/versions/#{spec.name}.json"
+
+  full_name = if spec.platform.to_s == 'ruby'
+    "#{spec.name}-#{spec.version}.gem"
+  else
+    "#{spec.name}-#{spec.version}-#{spec.platform}.gem"
+  end
+
+  details = URI.parse("https://rubygems.org/#{intel_path}").read
+
+  raise 'Invalid RubyGems API response' if details.empty?
+
+  version = JSON.parse(details).find do |version|
+    version.fetch('number') == spec.version.to_s &&
+      version.fetch('platform') == spec.platform.to_s
+  end
+
+  version || raise("#{full_name} not found in the RubyGems API response")
+
+  candidates = CACHE_DIRS
+    .map { |dir| File.join(dir, full_name) }
+    .select { |path| File.exist?(path) }
+
+  if candidates.empty?
+    puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in cache locations, maybe it is a stdlib gem?"
+    next
+  end
+
+  candidates.each do |full_path|
+    sha = Digest::SHA2.new
+
+    File.open(full_path) do |f|
+      while chunk = f.read(256)
+        sha << chunk
+      end
+    end
+
+
+    if version.fetch('sha') == sha.hexdigest
+      puts "\033[0;32m[OK]\033[0m #{full_path}"
+    else
+      puts "\033[0;31m[FAILURE]\033[0m"
+      puts "Checksum verification for #{full_path} failed!"
+
+      exit 1
+    end
+  end
+end
+
+puts "\033[0;32m[OK]\033[0m Congratulations, you're safe and sound!"
+puts "\033[0;32m[OK]\033[0m Maciej Mensfeld and the WhiteSource team wishes you a good day!"
