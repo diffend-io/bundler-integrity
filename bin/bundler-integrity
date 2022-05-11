@@ -25,6 +25,9 @@ deps = ::Bundler::Definition
 
 
 deps.specs.each do |spec|
+  # Ignore git based, etc
+  next unless spec.source.is_a?(Bundler::Source::Rubygems)
+
   intel_path = "api/v1/versions/#{spec.name}.json"
 
   full_name = if spec.platform.to_s == 'ruby'
