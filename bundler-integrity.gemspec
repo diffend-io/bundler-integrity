@@ -2,13 +2,13 @@
 
 Gem::Specification.new do |spec|
   spec.name        = 'bundler-integrity'
-  spec.version     = '1.0.2'
+  spec.version     = '1.0.3'
   spec.platform    = Gem::Platform::RUBY
   spec.authors     = ['Maciej Mensfeld']
   spec.email       = %w[maciej@mensfeld.pl]
   spec.homepage    = 'https://whitesourcesoftware.com'
   spec.summary     = 'Gem to verify integrity of packages installed via Bundler'
-  spec.description = 'Gem to verify integrity of packages installed via Bundler'
+  spec.description = 'Gem to verify integrity of packages installed via Bundler. Add it to your Gemfile and run bundle exec bundler-integrity'
   spec.license     = 'MIT'
 
   spec.required_ruby_version = '>= 2.5'

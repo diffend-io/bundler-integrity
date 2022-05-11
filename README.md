@@ -13,7 +13,7 @@ No warranties whatsoever.
 For local you can add `bundler-integrity` to your gemfile (recommended):
 
 ```bash
-echo 'gem "bundler-integrity"' >> Gemfile
+bundle add bundler-integrity
 bundle install
 bundle exec bundler-integrity
 ```
