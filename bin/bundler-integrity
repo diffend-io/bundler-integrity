@@ -38,7 +38,10 @@ deps.specs.each do |spec|
 
   details = URI.parse("https://rubygems.org/#{intel_path}").read
 
-  raise 'Invalid RubyGems API response' if details.empty?
+  if details.empty?
+    puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in RubyGems. Maybe external source?"
+    next
+  end
 
   version = JSON.parse(details).find do |version|
     version.fetch('number') == spec.version.to_s &&
