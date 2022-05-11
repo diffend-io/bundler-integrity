@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-lib = File.expand_path('lib', __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
 Gem::Specification.new do |spec|
   spec.name        = 'bundler-integrity'
-  spec.version     = '1.0.0'
+  spec.version     = '1.0.2'
   spec.platform    = Gem::Platform::RUBY
   spec.authors     = ['Maciej Mensfeld']
   spec.email       = %w[maciej@mensfeld.pl]
@@ -15,8 +12,8 @@ Gem::Specification.new do |spec|
   spec.license     = 'MIT'
 
   spec.required_ruby_version = '>= 2.5'
-  spec.files         = []
-  spec.executables   = 'bundler-integrity'
+  spec.files         = ['bin/bundler-integrity']
+  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
 
   spec.metadata = {
     'source_code_uri' => 'https://github.com/diffend/bundler-integrity',

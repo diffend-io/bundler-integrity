@@ -10,6 +10,16 @@ No warranties whatsoever.
 
 # Usage
 
+For local you can add `bundler-integrity` to your gemfile (recommended):
+
+```bash
+echo 'gem "bundler-integrity"' >> Gemfile
+bundle install
+bundle exec bundler-integrity
+```
+
+or (may not always work but should for dev):
+
 ```bash
 gem install bundler-integrity
 bundle exec bundler-integrity
