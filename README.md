@@ -15,15 +15,23 @@ For local you can add `bundler-integrity` to your gemfile (recommended):
 ```bash
 bundle add bundler-integrity
 bundle install
+# And run this to verify integrity of your local installation
 bundle exec bundler-integrity
 ```
 
-or (may not always work but should for dev):
+## Exporting data
+
+You can also export the expected checksums with the gems package names, so you can compare that
+on multiple servers without having to install this package everywhere.
+
+To do so, install `bundler-integrity` on one of the machines as stated above and run:
 
 ```bash
-gem install bundler-integrity
-bundle exec bundler-integrity
+bundle exec bundler-integrity export
 ```
+
+to get list of all the expected checksums for all the packages.
+
 
 ## Created by
 

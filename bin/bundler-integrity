@@ -10,6 +10,10 @@ require 'json'
 require 'open-uri'
 require 'digest/sha2'
 
+# This will only print gem files full names and their expected checksums WITHOUT validating
+# Useful to export and run search and comparison in prod, etc
+PRINT_EXPORT = (ARGV[0] == 'export')
+
 # Packages cache paths candidates (we will check all)
 CACHE_DIRS = [
   Bundler::RubygemsIntegration.new.gem_cache,
@@ -22,7 +26,6 @@ CACHE_DIRS = [
 deps = ::Bundler::Definition
        .build(Bundler.default_gemfile, Bundler.default_lockfile, nil)
        .tap(&:validate_runtime!)
-
 
 deps.specs.each do |spec|
   # Ignore git based, etc
@@ -50,32 +53,36 @@ deps.specs.each do |spec|
 
   version || raise("#{full_name} not found in the RubyGems API response")
 
-  candidates = CACHE_DIRS
-    .map { |dir| File.join(dir, full_name) }
-    .select { |path| File.exist?(path) }
+  if PRINT_EXPORT
+    puts "#{version.fetch('sha')} #{full_name}"
+  else
+    candidates = CACHE_DIRS
+      .map { |dir| File.join(dir, full_name) }
+      .select { |path| File.exist?(path) }
 
-  if candidates.empty?
-    puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in cache locations, maybe it is a stdlib gem?"
-    next
-  end
-
-  candidates.each do |full_path|
-    sha = Digest::SHA2.new
-
-    File.open(full_path) do |f|
-      while chunk = f.read(256)
-        sha << chunk
-      end
+    if candidates.empty?
+      puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in cache locations, maybe it is a stdlib gem?"
+      next
     end
 
+    candidates.each do |full_path|
+      sha = Digest::SHA2.new
 
-    if version.fetch('sha') == sha.hexdigest
-      puts "\033[0;32m[OK]\033[0m #{full_path}"
-    else
-      puts "\033[0;31m[FAILURE]\033[0m"
-      puts "Checksum verification for #{full_path} failed!"
+      File.open(full_path) do |f|
+        while chunk = f.read(256)
+          sha << chunk
+        end
+      end
 
-      exit 1
+
+      if version.fetch('sha') == sha.hexdigest
+        puts "\033[0;32m[OK]\033[0m #{full_path}"
+      else
+        puts "\033[0;31m[FAILURE]\033[0m"
+        puts "Checksum verification for #{full_path} failed!"
+
+        exit 1
+      end
     end
   end
 end
