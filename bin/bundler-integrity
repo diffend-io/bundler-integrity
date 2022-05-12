@@ -39,10 +39,16 @@ deps.specs.each do |spec|
     "#{spec.name}-#{spec.version}-#{spec.platform}.gem"
   end
 
-  details = URI.parse("https://rubygems.org/#{intel_path}").read
+  details = ''
+
+  begin
+    details = URI.parse("https://rubygems.org/#{intel_path}").read
+  rescue OpenURI::HTTPError => e
+    raise e unless e.message.include?('404')
+  end
 
   if details.empty?
-    puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in RubyGems. Maybe external source?"
+    puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in RubyGems. Maybe external source or private gem?"
     next
   end
 

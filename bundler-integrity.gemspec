@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name        = 'bundler-integrity'
-  spec.version     = '1.0.7'
+  spec.version     = '1.0.8'
   spec.platform    = Gem::Platform::RUBY
   spec.authors     = ['Maciej Mensfeld']
   spec.email       = %w[maciej@mensfeld.pl]
