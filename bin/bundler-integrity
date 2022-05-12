@@ -85,6 +85,13 @@ deps.specs.each do |spec|
       end
     end
   end
+
+rescue RuntimeError => e
+  if /not found in the RubyGems API response/.match(e.message)
+    puts "\033[0;31m[FAILURE]\033[0m Checksum verification for #{full_name} failed! Maybe it is behind a private repository"
+  else
+    raise e
+  end
 end
 
 unless PRINT_EXPORT
