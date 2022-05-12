@@ -19,6 +19,8 @@ bundle install
 bundle exec bundler-integrity
 ```
 
+![demo shell example](https://raw.githubusercontent.com/diffend-io/bundler-integrity/master/demo-img.png)
+
 ## Exporting data
 
 You can also export the expected checksums with the gems package names, so you can compare that
