@@ -57,7 +57,10 @@ deps.specs.each do |spec|
       version.fetch('platform') == spec.platform.to_s
   end
 
-  version || raise("#{full_name} not found in the RubyGems API response")
+  unless version
+    puts "\033[0;33m[WARN]\033[0m  #{full_name} version not found in the RubyGems. Maybe yanked or private with a RubyGems placeholder?"
+    next
+  end
 
   if PRINT_EXPORT
     puts "#{version.fetch('sha')} #{full_name}"
@@ -67,7 +70,7 @@ deps.specs.each do |spec|
       .select { |path| File.exist?(path) }
 
     if candidates.empty?
-      puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in cache locations, maybe it is a stdlib gem?"
+      puts "\033[0;33m[WARN]\033[0m #{full_name} was not found in cache locations. Maybe it is a stdlib gem?"
       next
     end
 
